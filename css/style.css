@@ -1,0 +1,58 @@
+body{
+    display: grid;
+    background-color: gainsboro;
+    height: 100vh;
+    border: 0px;
+    margin: 0px;
+    grid-template-rows: 1fr 6fr;
+    grid-template-columns: 1fr 6fr 1fr;
+    grid-template-areas: 
+    "header header header"
+    "l-space chess r-space";
+}
+
+header{
+    grid-area: header;
+}
+
+
+
+.sqr{
+    aspect-ratio: 1/1;
+    align-items: center;
+    background-color: rgb(5, 5, 5);
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    padding: 0px;
+}
+
+#board{
+    aspect-ratio: 1/1;
+    background-color: white;
+    border: 10px solid black;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    height: 95%;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+#chess-board{
+    grid-area: chess;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#left-space{
+    grid-area: l-space;
+}
+
+#right-space{
+    grid-area: r-space;
+}
+
