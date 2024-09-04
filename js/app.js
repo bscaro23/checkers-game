@@ -17,18 +17,58 @@ let player2Score = 0;
 let board = [];
 let clickedSqr;
 let turn;
-
+let pieceInHand;
 
 /*-------------------------------- Functions --------------------------------*/
 
+const changeTurn = () =>{
+    if (turn === 'white'){
+        turn = 'black';
+    } else {
+        turn = 'white';
+    }
+}
+
+const checkForTake = ([i, j], [posI, posJ]) =>{
+    posI = posI + (posI - i) // Checks the next row whether it is going down or up 
+    if (i % 2 === 0){
+         if (posJ === j){
+            posJ =- 1;
+         }
+    } else {
+        if (posJ === j){
+            posJ =+ 1;
+        }
+    }
+    if (board[posI][posJ] === ''){// Returns a changes posI posJ if you can take the piece.
+        return [posI,posJ]
+    }
+}
+
 const handleClick = (event, idx) =>{
-    
-    
 
     const i = Math.floor(idx / 4);
     const j = idx % 4
+    // Handle the second click -
+    if (pieceInHand){
+        board[pieceInHand[0]][pieceInHand[1]] = '';
+        board[i][j] = turn;
+        if (pieceInHand[0] !== i){ // as you always have to go forward or back so only need check for that
+            pieceInHand = NaN;
+            updateBoard();
+            changeTurn();
+
+            return; 
+            //Todo Add the ability to take multiple pieces.
+        }
+    }
+
+    
     if (board[i][j] !== turn) return;
-    console.log(sqrsAvailable(i, j));
+    console.log(sqrsAvailable(i, j)); //returns all possible places they can move
+
+    pieceInHand = [i, j];
+    // disable all .sqr that are not available to click
 }
 
 const init = () => {
@@ -47,9 +87,13 @@ const init = () => {
     winner = false;
     tie = false;
     turn = 'white';
+    pieceInHand = NaN;
     render();
 }
 
+const areNotClickable = (array)=> {
+    
+}
 const sqrsAvailable = (i, j) =>{
     // Returns an array of the possible places a piece can move to
     
@@ -64,7 +108,11 @@ const sqrsAvailable = (i, j) =>{
             for (let y = 0; y < 2; y++){
                 const posJ = j + y;
                 if (posI >= 0 && posI < 8 && posJ >= 0 && posJ < 4){
-                    possiblePositions.push([posI, posJ]);
+                    if (board[posI][posJ] === turn) { //Stops the piece being placed on another another piece of the same colour.
+                        continue;
+                    } else if (board[posI][posJ] === ''){
+                        possiblePositions.push([posI, posJ]);
+                    }
                 }
             }
         } else {
@@ -72,7 +120,13 @@ const sqrsAvailable = (i, j) =>{
             for (let y = -1; y < 1; y++){
                 const posJ = j + y;
                 if (posI >= 0 && posI < 8 && posJ >= 0 && posJ < 4){
-                    possiblePositions.push([posI, posJ]);
+                    if (board[posI][posJ] === turn) {
+                        continue;
+                    } else if (board[posI][posJ]  === ''){
+                        possiblePositions.push([posI, posJ]);
+                    } else {
+                        possiblePositions.push(checkForTake([i, j],[posI, posJ]));
+                    }
                 }
             }
         }
