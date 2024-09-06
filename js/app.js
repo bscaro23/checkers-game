@@ -4,7 +4,14 @@
 /*------------------------ Cached Element References ------------------------*/
 
 const boardElm = document.querySelector('#board');
-const rightSpaceElm = document.querySelector('#right-space');
+const whichTurnElm = document.querySelector('#which-turn');
+const player1ScoreElm = document.querySelector('#player1-score');
+const player2ScoreElm = document.querySelector('#player2-score');
+const player1PieceElm = document.querySelector('#player1-piece');
+const player2PieceElm = document.querySelector('#player2-piece');
+const victoryMessageElm = document.querySelector('#victory-message');
+const resetButtonElm = document.querySelector('#reset');
+const replayButtonElm = document.querySelector('#replay');
 let sqrElms = [];
 
 /*---------------------------- Variables (state) ----------------------------*/
@@ -19,14 +26,32 @@ let turn;
 let pieceInHand;
 let pieceToTake;
 let spaceToLand;
+let king;
+let player1Piece;
+let player2Piece;
+let tieCounter;
 
 /*-------------------------------- Functions --------------------------------*/
 
+const addKing = (i, j) => {
+
+    const index = convertFrom2D(i, j);
+    //Stops multiple child nodes being added
+    if (sqrElms[index].querySelector('.piece').textContent !== '') return;
+
+    if (turn === '⚪️' && i === 7){
+        sqrElms[index].querySelector('.piece').textContent = '👑';
+    } else if (turn === '⚫️' && i === 0){
+        sqrElms[index].querySelector('.piece').textContent = '👑';
+    }
+
+}
+
 const changeTurn = () =>{
-    if (turn === 'white'){
-        turn = 'black';
+    if (turn === '⚪️'){
+        turn = '⚫️';
     } else {
-        turn = 'white';
+        turn = '⚪️';
     }
 }
 
@@ -46,10 +71,45 @@ const checkForTake = ([i, j], [posI, posJ]) =>{
     if (newPosI >= 0 && newPosI < 8 && newPosJ >= 0 && newPosJ < 4 && board[newPosI][newPosJ] === ''){ // Ensuring indices are within bounds
         pieceToTake.push([posI, posJ]);
         spaceToLand.push(convertFrom2D(newPosI, newPosJ));
-        console.log(spaceToLand, pieceToTake);
         return convertFrom2D(newPosI, newPosJ);
     }
 }
+
+const checkForTie = () => {
+    if (tieCounter === 40) tie = true;
+}
+
+const checkForWinner = () => {
+    let whiteExists = false;
+    let blackExists = false;
+
+    sqrElms.forEach((sqrElm) => {
+        const piece = sqrElm.querySelector('.piece');
+        if (piece.classList.contains('white')) {
+            whiteExists = true;
+        } else if (piece.classList.contains('black')) {
+            blackExists = true;
+        }
+    });
+
+    if (!whiteExists) {
+        if (player1Piece === '⚫️') {
+            winner = 'Player 1 Wins Congratulations!';
+            player1Score += 1;
+        } else {
+            winner = 'Player 2 Wins Congratulations!';
+            player2Score += 1;
+        }
+    } else if (!blackExists) {
+        if (player1Piece === '⚪️') {
+            winner = 'Player 1 Wins Congratulations!';
+            player1Score += 1;
+        } else {
+            winner = 'Player 2 Wins Congratulations!';
+            player2Score += 1;
+        }
+    }
+};
 
 const clickableAgain = () =>{
     sqrElms.forEach((sqrElm) =>{
@@ -62,10 +122,15 @@ const convertFrom2D = (x, y) => {
 }
 
 const handleClick = (event, idx) =>{
+
+    if (winner || tie) return;
+
+
     //change to the 2d array
     const i = Math.floor(idx / 4);
     const j = idx % 4;
 
+    
     // saves the new click as a 2d index
     const newClick = [i, j];
 
@@ -85,6 +150,12 @@ const handleClick = (event, idx) =>{
         //highlight the clicked piece
         sqrElms[idx].classList.add('clicked');
 
+        if (sqrElms[idx].querySelector('.piece').textContent === '👑'){
+            king = true;
+        } else {
+            king = false;
+        }
+
         // sets the piece in hand
         pieceInHand = newClick;
         return;
@@ -93,6 +164,8 @@ const handleClick = (event, idx) =>{
     // if you click the same piece again
     if (pieceInHand[0] === newClick[0] && pieceInHand[1] === newClick[1]){
         sqrElms[idx].classList.remove('clicked');
+        king = false;
+        clickableAgain();
         pieceInHand = null;
         return;
     }
@@ -105,11 +178,15 @@ const handleClick = (event, idx) =>{
 
         if (pieceInHand[0] !== i){ // as you always have to go forward or back, so only need to check for that
 
+            addKing(i, j);
             const takeIndex = spaceToLand.findIndex(space => space === idx);
 
             if (takeIndex !== -1) {
                 const [takeI, takeJ] = pieceToTake[takeIndex];
                 board[takeI][takeJ] = ''; 
+                sqrElms[convertFrom2D(takeI, takeJ)].querySelector('.piece').textContent = '';
+
+                tieCounter = 0;
 
                 render();
 
@@ -118,53 +195,88 @@ const handleClick = (event, idx) =>{
 
                 sqrsAvailable(i, j);
 
-                if (pieceToTake.length > 0){
-                    sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].classList.remove('clicked');
-                    pieceInHand = null;
-                    clickableAgain();
-                    render(); 
-                } else {
-                    sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].classList.remove('clicked');
-                    pieceInHand = null;
-                    clickableAgain();
-                    changeTurn();
-                    render(); 
-                }
+                if (!pieceToTake.length > 0)changeTurn();
             } else {
-                sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].classList.remove('clicked');
-                pieceInHand = null;
-                clickableAgain();
                 changeTurn();
-                render();
             }
-            
+
+            if (king === true){
+                sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].querySelector('.piece').textContent = '';
+                sqrElms[idx].querySelector('.piece').textContent = '👑';
+            }
+            sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].classList.remove('clicked');
+            checkForWinner();
+            pieceInHand = null;
+            clickableAgain();
+            render();
+            tieCounter += 1;
             pieceToTake = [];
             spaceToLand = [];
             return; 
         }
     }
-    // Todo: disable all .sqr that are not available to click
 }
 
 const init = () => {
+    
     for (let i = 0; i < 8; i++){
         board[i] = [];
         for (let j = 0; j < 4; j++){
             if (i < 3){
-                board[i][j] = 'white';
+                board[i][j] = '⚪️';
             } else if (i > 4){
-                board[i][j] = 'black';
+                board[i][j] = '⚫️';
             } else{
                 board[i][j] = '';
             }
         }
     }
-    winner = false;
-    tie = false;
-    turn = 'white';
+    winner = '';
+    tie = '';
+    turn = '⚪️';
     pieceInHand = null;
     pieceToTake = [];
     spaceToLand = [];
+    player1Piece = '⚪️';
+    player2Piece = '⚫️';
+    player1Score = 0;
+    player2Score = 0;
+    king = false;
+
+    render();
+}
+
+const replay = () =>{
+
+    if (!winner && !tie) return;
+
+    for (let i = 0; i < 8; i++){
+        board[i] = [];
+        for (let j = 0; j < 4; j++){
+            if (i < 3){
+                board[i][j] = '⚪️';
+            } else if (i > 4){
+                board[i][j] = '⚫️';
+            } else{
+                board[i][j] = '';
+            }
+        }
+    }
+    winner = '';
+    tie = '';
+    turn = '⚪️';
+    pieceInHand = null;
+    pieceToTake = [];
+    spaceToLand = [];
+    if (player1Piece === '⚪️'){
+        player1Piece = '⚫️';
+        player2Piece = '⚪️';
+    } else {
+        player1Piece = '⚪️';
+        player2Piece = '⚫️';
+    }
+    
+    king = false;
     render();
 }
 
@@ -209,7 +321,10 @@ const sqrsAvailable = (i, j) =>{
         }
     }
     return possiblePositions.filter((position) =>{
-        if (turn === 'white'){
+        if (sqrElms[originalPosition].querySelector('.piece').textContent !== ''){
+
+            return position;
+        } else if (turn === '⚪️'){
             return position >= originalPosition;
         } else {
             return position <= originalPosition;
@@ -219,7 +334,7 @@ const sqrsAvailable = (i, j) =>{
 
 const render = () => {
     updateBoard();
-    // updateScore();
+    updateScore();
     updateMessage();
 }
 
@@ -253,9 +368,9 @@ const updateBoard = () => {
                 piece.classList.remove('white', 'black');
 
                 // Add the appropriate class based on the piece's color
-                if (square === 'white') {
+                if (square === '⚪️') {
                     piece.classList.add('white');
-                } else if (square === 'black') {
+                } else if (square === '⚫️') {
                     piece.classList.add('black');
                 }
             }
@@ -265,10 +380,16 @@ const updateBoard = () => {
 }
 
 const updateMessage = () => {
-    rightSpaceElm.textContent = turn;
+    whichTurnElm.textContent = turn;
+    victoryMessageElm.textContent = winner;
 }
 
-
+const updateScore = () => {
+    player1ScoreElm.textContent = player1Score;
+    player2ScoreElm.textContent = player2Score;
+    player1PieceElm.textContent = player1Piece;
+    player2PieceElm.textContent = player2Piece;
+}
 renderBoard();
 init();
 
@@ -278,7 +399,8 @@ sqrElms.forEach((square, idx) => {
     square.addEventListener('click', (event) => handleClick(event, idx));
 });
 
-
+replayButtonElm.addEventListener('click', replay);
+resetButtonElm.addEventListener('click', init);
 /*------------------------ Cached Element References ------------------------*/
 
 

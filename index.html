@@ -3,23 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>CHECKERS</title>
     <link rel="stylesheet" href="./css/style.css">
     <script defer src="./js/app.js"></script>
 </head>
 <body>
     <header>
-        header
+        CHECKERS
     </header>
     <div id="left-space">
-        Score Board
+        <section id="score-board">
+            <div class="score-board-square" id="player1-piece"></div>
+            <div class="score-board-square" id="player2-piece"></div>
+            <div class="score-board-square">PLAYER 1</div>
+            <div class="score-board-square">PLAYER 2</div>
+            <div class="score-board-square" id="player1-score"></div>
+            <div class="score-board-square" id="player2-score"></div>
+        </section>
+        <section id="buttons">
+            <button id="reset">RESET</button>
+            <button id="replay">REPLAY</button>
+        </section>
     </div>
     <div id="chess-board">
         <section id="board">
         </section>
     </div>
     <div id="right-space">
-        Victory message/difficulty/reset
+        <section id="victory-message">
+
+        </section>
+        <section id="turn-section">
+            <div id="which-turn"></div>
+            <div id="turn">TURN</div>
+        </section>
     </div>
 </body>
 </html>
