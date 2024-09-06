@@ -56,3 +56,24 @@ header{
     grid-area: r-space;
 }
 
+.black {
+    background-color: black;
+    border: 2px solid #f9f7f7;
+    
+}
+
+.clicked {
+    background-color: rgb(94, 94, 114);
+}
+
+
+.piece {
+    width: 90%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+}
+.white {
+    background-color: white;
+    border: 2px solid #0a0a0a;
+    
+}

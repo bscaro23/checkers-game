@@ -4,6 +4,7 @@
 /*------------------------ Cached Element References ------------------------*/
 
 const boardElm = document.querySelector('#board');
+const rightSpaceElm = document.querySelector('#right-space');
 let sqrElms = [];
 
 /*---------------------------- Variables (state) ----------------------------*/
@@ -30,7 +31,8 @@ const changeTurn = () =>{
 }
 
 const checkForTake = ([i, j], [posI, posJ]) =>{
-    newPosI = posI + (posI - i) // Checks the next row whether it is going down or up 
+    const newPosI = posI + (posI - i); // Checks the next row whether it is going down or up 
+    let newPosJ = posJ;
     if (i % 2 === 0){
          if (posJ === j){
             newPosJ = posJ - 1;
@@ -41,7 +43,7 @@ const checkForTake = ([i, j], [posI, posJ]) =>{
         }
     }
    
-    if (board[newPosI][newPosJ] === ''){// Returns a changes posI posJ if you can take the piece.
+    if (newPosI >= 0 && newPosI < 8 && newPosJ >= 0 && newPosJ < 4 && board[newPosI][newPosJ] === ''){ // Ensuring indices are within bounds
         pieceToTake.push([posI, posJ]);
         spaceToLand.push(convertFrom2D(newPosI, newPosJ));
         console.log(spaceToLand, pieceToTake);
@@ -60,42 +62,88 @@ const convertFrom2D = (x, y) => {
 }
 
 const handleClick = (event, idx) =>{
-
+    //change to the 2d array
     const i = Math.floor(idx / 4);
     const j = idx % 4;
-   
-    // Handle the second click -
-    if (pieceInHand){
-        board[pieceInHand[0]][pieceInHand[1]] = '';
-        board[i][j] = turn;
-        if (pieceInHand[0] !== i){ // as you always have to go forward or back so only need check for that
-            spaceToLand.forEach((space, index) =>{
-                if (space === idx) board[pieceToTake[index][0]][pieceToTake[index][1]] = '';
-            })
 
-            pieceInHand = NaN;
-            updateBoard();
-            changeTurn();
-            clickableAgain();
-            pieceToTake = [];
-            spaceToLand = [];
+    // saves the new click as a 2d index
+    const newClick = [i, j];
 
-            return; 
-            //Todo Add the ability to take multiple pieces.
-        }
+    // if there is no piece in hand, add a piece to hand
+    if (!pieceInHand){
+
+        // wont allow you to click on other pieces
+        if (board[i][j] !== turn) return;
+
+        const availableArr = sqrsAvailable(i, j);
+
+        //Allows you to only click on the relevant squares
+        sqrElms.forEach((sqrElm, idx) => {
+            if (!availableArr.find(item => item === idx)) sqrElm.style.pointerEvents = 'none';
+        })
+
+        //highlight the clicked piece
+        sqrElms[idx].classList.add('clicked');
+
+        // sets the piece in hand
+        pieceInHand = newClick;
+        return;
     }
 
-    if (board[i][j] !== turn) return;
+    // if you click the same piece again
+    if (pieceInHand[0] === newClick[0] && pieceInHand[1] === newClick[1]){
+        sqrElms[idx].classList.remove('clicked');
+        pieceInHand = null;
+        return;
+    }
+   
+    // Handle the second click
+    if (pieceInHand){
 
-    availableArr = sqrsAvailable(i, j);
+        board[pieceInHand[0]][pieceInHand[1]] = '';
+        board[i][j] = turn;
 
-    sqrElms.forEach((sqrElm, idx) => {
-        if (!availableArr.find(item => item === idx)) sqrElm.style.pointerEvents = 'none';
-    })
-    
-    
-    pieceInHand = [i, j];
-    // Todo disable all .sqr that are not available to click
+        if (pieceInHand[0] !== i){ // as you always have to go forward or back, so only need to check for that
+
+            const takeIndex = spaceToLand.findIndex(space => space === idx);
+
+            if (takeIndex !== -1) {
+                const [takeI, takeJ] = pieceToTake[takeIndex];
+                board[takeI][takeJ] = ''; 
+
+                render();
+
+                pieceToTake = [];
+                spaceToLand = [];
+
+                sqrsAvailable(i, j);
+
+                if (pieceToTake.length > 0){
+                    sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].classList.remove('clicked');
+                    pieceInHand = null;
+                    clickableAgain();
+                    render(); 
+                } else {
+                    sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].classList.remove('clicked');
+                    pieceInHand = null;
+                    clickableAgain();
+                    changeTurn();
+                    render(); 
+                }
+            } else {
+                sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].classList.remove('clicked');
+                pieceInHand = null;
+                clickableAgain();
+                changeTurn();
+                render();
+            }
+            
+            pieceToTake = [];
+            spaceToLand = [];
+            return; 
+        }
+    }
+    // Todo: disable all .sqr that are not available to click
 }
 
 const init = () => {
@@ -114,65 +162,66 @@ const init = () => {
     winner = false;
     tie = false;
     turn = 'white';
-    pieceInHand = NaN;
+    pieceInHand = null;
     pieceToTake = [];
     spaceToLand = [];
     render();
 }
 
-const areNotClickable = (array)=> {
-    
-}
 const sqrsAvailable = (i, j) =>{
     // Returns an array of the possible places a piece can move to
-    
-    let possiblePositions = [convertFrom2D(i, j)];
+    const originalPosition = convertFrom2D(i, j);
+    let possiblePositions = [originalPosition];
 
     for (let x = -1; x < 2; x+= 2){
 
         const posI = i + x;
-        if (i % 2 === 0){
-            //clickable square are j and j + 1
-
-            for (let y = 0; y < 2; y++){
-                const posJ = j + y;
-                if (posI >= 0 && posI < 8 && posJ >= 0 && posJ < 4){
-                    if (board[posI][posJ] === turn) { //Stops the piece being placed on another another piece of the same colour.
-                        continue;
-                    } else if (board[posI][posJ] === ''){
-                        possiblePositions.push(convertFrom2D(posI, posJ));
-                    } else {
-                        possiblePositions.push(checkForTake([i, j],[posI, posJ]));
+        if (posI >= 0 && posI < 8){ // Ensuring posI stays within bounds
+            if (i % 2 === 0){
+                //clickable square are j and j + 1
+                for (let y = 0; y < 2; y++){
+                    const posJ = j + y;
+                    if (posJ >= 0 && posJ < 4){ // Ensuring posJ stays within bounds
+                        if (board[posI][posJ] === turn) { //Stops the piece being placed on another piece of the same color.
+                            continue;
+                        } else if (board[posI][posJ] === ''){
+                            possiblePositions.push(convertFrom2D(posI, posJ));
+                        } else {
+                            possiblePositions.push(checkForTake([i, j],[posI, posJ]));
+                        }
                     }
                 }
-            }
-        } else {
-            //clickable squares are j and j - 1 in both cases when j is between 0 and 3 
-
-            for (let y = -1; y < 1; y++){
-                const posJ = j + y;
-                if (posI >= 0 && posI < 8 && posJ >= 0 && posJ < 4){
-                    if (board[posI][posJ] === turn) {
-                        continue;
-                    } else if (board[posI][posJ]  == ''){
-                        possiblePositions.push(convertFrom2D(posI, posJ));
-                    } else {
-                        possiblePositions.push(checkForTake([i, j],[posI, posJ]));
+            } else {
+                //clickable squares are j and j - 1 in both cases when j is between 0 and 3
+                for (let y = -1; y < 1; y++){
+                    const posJ = j + y;
+                    if (posJ >= 0 && posJ < 4){ // Ensuring posJ stays within bounds
+                        if (board[posI][posJ] === turn) {
+                            continue;
+                        } else if (board[posI][posJ]  === ''){
+                            possiblePositions.push(convertFrom2D(posI, posJ));
+                        } else {
+                            possiblePositions.push(checkForTake([i, j],[posI, posJ]));
+                        }
                     }
                 }
             }
         }
     }
-    return possiblePositions;
+    return possiblePositions.filter((position) =>{
+        if (turn === 'white'){
+            return position >= originalPosition;
+        } else {
+            return position <= originalPosition;
+        }
+    });
 }
 
 const render = () => {
     updateBoard();
     // updateScore();
-    // updateMessage();
+    updateMessage();
 }
-
-
 
 const renderBoard = () =>{
     for (let i = 0; i < 64; i++){
@@ -184,6 +233,9 @@ const renderBoard = () =>{
 
         if ((row + col) % 2 !== 0) {
             newSqr.classList.add('sqr');
+            let piece = document.createElement('div');
+            piece.classList.add('piece');
+            newSqr.appendChild(piece);
             sqrElms.push(newSqr);
         } 
 
@@ -191,25 +243,40 @@ const renderBoard = () =>{
     }
 }
 
-const updateBoard = () =>{
+const updateBoard = () => {
     let x = 0;
-    for (let i = 0; i < 8; i++){
-        board[i].forEach((square) =>{
-            sqrElms[x].textContent = square; 
+    for (let i = 0; i < 8; i++) {
+        board[i].forEach((square) => {
+            const piece = sqrElms[x].querySelector('.piece');
+            if (piece) {
+                // Clear any previously applied classes ('white', 'black')
+                piece.classList.remove('white', 'black');
+
+                // Add the appropriate class based on the piece's color
+                if (square === 'white') {
+                    piece.classList.add('white');
+                } else if (square === 'black') {
+                    piece.classList.add('black');
+                }
+            }
             x += 1;
-        })
+        });
     }
 }
 
+const updateMessage = () => {
+    rightSpaceElm.textContent = turn;
+}
 
 
-renderBoard()
+renderBoard();
 init();
+
 /*----------------------------- Event Listeners -----------------------------*/
 
 sqrElms.forEach((square, idx) => {  
     square.addEventListener('click', (event) => handleClick(event, idx));
-})
+});
 
 
 /*------------------------ Cached Element References ------------------------*/
