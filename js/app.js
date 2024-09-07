@@ -30,6 +30,7 @@ let king;
 let player1Piece;
 let player2Piece;
 let tieCounter;
+let takeAgain;
 
 /*-------------------------------- Functions --------------------------------*/
 
@@ -111,6 +112,11 @@ const checkForWinner = () => {
     }
 };
 
+const clearBoard = () => {
+    sqrElms.forEach((sqrElm) =>
+    sqrElm.querySelector('.piece').textContent = '');
+}
+
 const clickableAgain = () =>{
     sqrElms.forEach((sqrElm) =>{
         sqrElm.style.pointerEvents = 'auto';
@@ -142,9 +148,10 @@ const handleClick = (event, idx) =>{
 
         const availableArr = sqrsAvailable(i, j);
 
+        console.log(`availableArr ${availableArr}`);
         //Allows you to only click on the relevant squares
         sqrElms.forEach((sqrElm, idx) => {
-            if (!availableArr.find(item => item === idx)) sqrElm.style.pointerEvents = 'none';
+            if (!availableArr.includes(idx)) sqrElm.style.pointerEvents = 'none'; //There was a bug with .find() was returning false on 0 index so had to swap to include
         })
 
         //highlight the clicked piece
@@ -165,6 +172,17 @@ const handleClick = (event, idx) =>{
     if (pieceInHand[0] === newClick[0] && pieceInHand[1] === newClick[1]){
         sqrElms[idx].classList.remove('clicked');
         king = false;
+
+        if (takeAgain){
+            changeTurn();
+            takeAgain = false;
+            pieceToTake = [];
+            spaceToLand = [];
+            clickableAgain();
+            pieceInHand = null;
+            render();
+            return;
+        }
         clickableAgain();
         pieceInHand = null;
         return;
@@ -193,9 +211,26 @@ const handleClick = (event, idx) =>{
                 pieceToTake = [];
                 spaceToLand = [];
 
-                sqrsAvailable(i, j);
+                const availableArr = sqrsAvailable(i, j)
+                
+                if (pieceToTake.length > 0){
+                    clickableAgain();
+                    sqrElms.forEach((sqrElm, idx) => {
+                        if (!availableArr.includes(idx)) sqrElm.style.pointerEvents = 'none'; //There was a bug with .find() was returning false on 0 index so had to swap to include
+                    })
 
-                if (!pieceToTake.length > 0)changeTurn();
+                    sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].classList.remove('clicked');
+
+                    sqrElms[idx].classList.add('clicked');
+
+                    pieceInHand = [i, j];
+
+                    takeAgain = true;
+
+                    return;
+                } else {
+                    changeTurn();
+                }
             } else {
                 changeTurn();
             }
@@ -242,7 +277,8 @@ const init = () => {
     player1Score = 0;
     player2Score = 0;
     king = false;
-
+    takeAgain = false;
+    clearBoard();
     render();
 }
 
@@ -277,6 +313,8 @@ const replay = () =>{
     }
     
     king = false;
+    takeAgain = false;
+    clearBoard();
     render();
 }
 
@@ -322,7 +360,7 @@ const sqrsAvailable = (i, j) =>{
     }
     return possiblePositions.filter((position) =>{
         if (sqrElms[originalPosition].querySelector('.piece').textContent !== ''){
-
+            
             return position;
         } else if (turn === '⚪️'){
             return position >= originalPosition;
@@ -406,3 +444,4 @@ resetButtonElm.addEventListener('click', init);
 
 //Todo: when you click on the piece the cursor will change to look like the checker. This will then only allow you to click on an available square.
 
+//Todo: remove the king text at the end of a game.
