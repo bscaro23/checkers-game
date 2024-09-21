@@ -3,8 +3,11 @@ body{
     color: #d4c54a; 
     background-color: #141314;
     height: 100vh;
+    width: 100vw;
     border: 0px;
     margin: 0px;
+    box-sizing: border-box;
+    overflow-x: hidden;
     grid-template-rows: 1fr 6fr;
     grid-template-columns: 1fr 2fr 1fr;
     grid-template-areas: 
@@ -12,7 +15,7 @@ body{
     "l-space chess r-space";
     font-weight: 800;
     /* background-image: url('https://files.oaiusercontent.com/file-eea0zkqocWWJOxc2Ghbz8HT8?se=2024-09-09T16%3A47%3A22Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D99911200-bd1f-435f-875a-b4270084e97d.webp&sig=MU7dTxSRHx8MDeqn/czGS6ad1jVJ2MKZO1FQ5SSEL38%3D'); */
-
+}
 header{
     grid-area: header;
     display: flex;
@@ -176,4 +179,51 @@ button{
 
 .clicked {
     background-color: rgb(136, 136, 135);
+}
+
+@media (max-width: 400px) {
+    body{
+        grid-template-rows: 1fr 6fr 1fr; /* Removed the third row */
+        grid-template-columns: 1fr 1fr; /* Only one column for full width */
+        grid-template-areas: 
+        "header header"
+        "chess chess"
+        "l-space r-space"; /* Only header and chessboard in this layout */
+        font-size: small;
+        font-weight: 800;
+    }
+
+    header{
+        font-size: 400%;
+    }
+
+    button{
+        height: 20%;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        font-size: small;
+    }
+
+    #chess-board {
+        width: 100%; /* Make the chess board take full width */
+        height: auto; /* Maintain aspect ratio */
+    }
+
+    #board {
+
+        width: 90%; /* Full width */
+        height: auto; /* Keep the square aspect ratio */
+    }
+
+    #player1-score{
+        font-size: 300%;
+    }
+    
+    #player2-score{
+        font-size: 300%;
+    }
+
+    #right-space{
+        font-size: 200%;
+    }
 }

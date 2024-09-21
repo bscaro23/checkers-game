@@ -128,6 +128,7 @@ const handleClick = (event, idx) =>{
             pieceToTake = [];
             spaceToLand = [];
         }
+        render();
         clickableAgain();
         pieceInHand = null;
         return;
@@ -279,7 +280,7 @@ const updateBoard = () => {
         board[i].forEach((square) => {
             const piece = sqrElms[x].querySelector('.piece');
             if (piece) {
-                // Clear any previously applied classes ('white', 'black')
+                // Clear any previously applied classes ('white', 'black' etc.)
                 piece.classList.remove('white', 'black', 'king');
 
                 // Add the appropriate class based on the piece's color
@@ -289,6 +290,7 @@ const updateBoard = () => {
                     piece.classList.add('black');
                 }
 
+                // Add the king class if applicable
                 if (square.king) piece.classList.add('king');
             }
             x += 1;
