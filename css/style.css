@@ -183,12 +183,12 @@ button{
 
 @media (max-width: 400px) {
     body{
-        grid-template-rows: 1fr 6fr 1fr; /* Removed the third row */
-        grid-template-columns: 1fr 1fr; /* Only one column for full width */
+        grid-template-rows: 1fr 1fr 1fr; /* Removed the third row */
+        grid-template-columns: 1fr; /* Only one column for full width */
         grid-template-areas: 
-        "header header"
-        "chess chess"
-        "l-space r-space"; /* Only header and chessboard in this layout */
+        "header"
+        "chess"
+        "r-space";
         font-size: small;
         font-weight: 800;
     }
@@ -202,6 +202,15 @@ button{
         aspect-ratio: 1/1;
         border-radius: 50%;
         font-size: small;
+        display: none;
+    }
+
+    .score-board-square{
+        margin: 20px 0px;
+        width: 50%;
+        height: 10%;
+        font-size: 150%;
+        
     }
 
     #chess-board {
@@ -224,6 +233,10 @@ button{
     }
 
     #right-space{
-        font-size: 200%;
+        font-size: 400%;
+    }
+
+    #left-space{
+        display: none;
     }
 }
