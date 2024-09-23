@@ -156,6 +156,7 @@ const handleClick = (event, idx) =>{
         if (takeIndex !== -1) {
             const [takeI, takeJ] = pieceToTake[takeIndex];
             board[takeI][takeJ].color = ''; 
+            board[takeI][takeJ].king = false; 
             tieCounter = 0;
             render();
             pieceToTake = [];
@@ -336,4 +337,4 @@ resetButtonElm.addEventListener('click', reset);
 /*------------------------ Cached Element References ------------------------*/
 
 
-//Todo 2. finish styling victory page, 3. add the ability to play different checkers versions
+//Todo 2. finish styling victory page and mobile version, 3. add the ability to play different checkers versions

@@ -1,4 +1,5 @@
 # Checkers Game
+<img src='images/Screenshot 2024-09-23 at 21.07.42.png' alt="Screenshot of Gameplay">
 
 ## Description
 
