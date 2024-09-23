@@ -171,11 +171,11 @@ const handleClick = (event, idx) =>{
             } 
         } 
         
-        changeTurn();
-        
         sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].classList.remove('clicked');
         checkForWinner();
+        changeTurn();
         pieceInHand = null;
+        takeAgain = false;
         clickableAgain();
         render();
         tieCounter += 1;
@@ -220,8 +220,10 @@ const resetGameState = () => {
     pieceInHand = null;
     pieceToTake = [];
     spaceToLand = [];
+    clickableAgain();
     king = false;
     takeAgain = false;
+    sqrElms.forEach((sqr) => sqr.classList.remove('clicked'));
     victorySectionElm.querySelector('#winning-piece').classList.remove('white', 'black');
     victorySectionElm.style.display = 'none';
 }
@@ -334,3 +336,4 @@ resetButtonElm.addEventListener('click', reset);
 /*------------------------ Cached Element References ------------------------*/
 
 
+//Todo 2. finish styling victory page, 3. add the ability to play different checkers versions
