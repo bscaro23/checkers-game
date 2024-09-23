@@ -1,61 +1,90 @@
-body{
+body {
     display: grid;
-    color: #d4c54a; 
-    background-color: #141314;
+    color: #d4c54a;
+    margin: 0;
     height: 100vh;
     width: 100vw;
-    border: 0px;
-    margin: 0px;
-    box-sizing: border-box;
     overflow-x: hidden;
+    box-sizing: border-box;
     grid-template-rows: 1fr 6fr;
     grid-template-columns: 1fr 2fr 1fr;
     grid-template-areas: 
-    "header header header"
-    "l-space chess r-space";
-    font-weight: 800;
-    /* background-image: url('https://files.oaiusercontent.com/file-eea0zkqocWWJOxc2Ghbz8HT8?se=2024-09-09T16%3A47%3A22Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D99911200-bd1f-435f-875a-b4270084e97d.webp&sig=MU7dTxSRHx8MDeqn/czGS6ad1jVJ2MKZO1FQ5SSEL38%3D'); */
+        "header header header"
+        "l-space chess r-space";
+    background: url('../images/backgroundРесурс 5111.png') center/cover no-repeat;
+    font-family: "Outfit", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 900;
+    font-style: normal;
 }
-header{
+
+header {
     grid-area: header;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: right;
     font-size: 600%;
+    background: url('../images/nameРесурс 6111.png') center/contain no-repeat;
+    margin: 0.5%;
+    height: auto;
 }
 
-button{
-    height: 30%;
+button {
+    min-height: 60%;
+    min-width: 60%;
     aspect-ratio: 1/1;
     border-radius: 50%;
-    font-size: large;
-    background-color: black;
-    color: blanchedalmond;
+    background-color: #062555;
+    color: #d4c54a;
+    font-size: 15%;
+    border: solid antiquewhite;
 }
 
-
-.score-board-square{
-    margin: 20px 0px;
-    width: 50%;
-    height: 10%;
+.score-board-square {
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 200%;
-    
+    text-align: center;
+    margin-left: 5%;
+}
+
+.black, .black-king, .white, .white-king {
+    background-position: center;
+    background-size: cover;
 }
 
 .black {
-    background-color: #3e5f8f;
-    border: 1px solid #f9f7f7;
-    background: radial-gradient(circle, #160101 0%, #3d3333 100%); 
-    box-shadow: 
-        inset 0 10px 10px rgba(0, 0, 0, 0.5),  
-        0 5px 15px rgba(0, 0, 0, 0.8),       
-        0 2px 2px rgba(255, 255, 255, 0.5);  
+    background-image: url('../images/blackРесурс 4111.png');
 }
 
+.black-king {
+    background-image: url('../images/black kingРесурс 2111.png');
+}
 
+.white {
+    background-image: url('../images/whiteРесурс 3111.png');
+}
+
+.white-king {
+    background-image: url('../images/white kingРесурс 1111.png');
+}
+
+.black-picked-up {
+    cursor: url('../images/blackРесурс 4111.png'), auto;
+}
+
+.black-king-picked-up {
+    cursor: url('../images/black kingРесурс 2111.png'), auto;
+}
+
+.white-picked-up {
+    cursor: url('../images/whiteРесурс 3111.png'), auto;
+}
+
+.white-king-picked-up {
+    cursor: url('../images/white kingРесурс 1111.png'), auto;
+}
 
 .piece {
     width: 90%;
@@ -67,114 +96,133 @@ button{
     font-size: 300%;
 }
 
-.white {
-    background: radial-gradient(circle, #f0f0f0 0%, #d9d9d9 100%); /* Light gradient for a white piece */
-    border-radius: 50%; /* Makes the div circular */
-    box-shadow: 
-        inset 0 10px 10px rgba(0, 0, 0, 0.3),  
-        0 5px 15px rgba(0, 0, 0, 0.8),      
-        0 2px 2px rgba(255, 255, 255, 0.6);  
-    border: 2px solid #d9d9d9; 
-    background-image: url('/images/Screenshot\ 2024-09-09\ at\ 17.59.32.png');
-    
-}
-
-.right-side{
+.sqr {
     display: flex;
-    align-items: center;
-    justify-content: left;
-    font-size: 500%;
-}
-
-.sqr{
-    aspect-ratio: 1/1;
-    align-items: center;
-    background-color: #3e5f8f;
-    box-sizing: border-box;
-    color: antiquewhite;
-    display: flex;
-    height: 100%;
     justify-content: center;
-    padding: 0px;
+    align-items: center;
+    aspect-ratio: 1/1;
+    background-color: #3e5f8f;
+    color: antiquewhite;
+    padding: 0;
+    height: 100%;
+    box-sizing: border-box;
 }
 
-#buttons{
+
+#buttons {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    gap: 10%;
+    margin-right: 2.5%;
 }
 
-#player1-piece{
-    font-size: 400%;
+#player1-score, #player2-score {
+    display: flex;
+    align-items: start;
 }
 
-#player2-piece{
-    font-size: 400%;
-}
-
-
-
-#board{
+#board {
     aspect-ratio: 1/1;
-    background-color: white;
-    border: 10px solid black;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
+    background-color: white;
+    border: 10px solid #d4c54a;
     height: 95%;
-    padding: 0px;
+    padding: 0;
     box-sizing: border-box;
 }
 
-#chess-board{
+#chess-board {
     grid-area: chess;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#left-space{
+#left-space {
+    margin-left: 15%;
     grid-area: l-space;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* Full height of the grid area */
 }
 
-#right-space{
+#player1-piece, #player2-piece {
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#right-space {
     grid-area: r-space;
     display: flex;
-    flex-direction: column;
-    font-size: 500%;
-    justify-content: space-evenly;
+    height: 100%;
+    width: 100%;
     align-items: center;
+    justify-content: center;
 }
 
-#score-board{
-    display: flex;
+#score-board {
+    height: 50%;
+    width: 80%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
     flex-wrap: wrap;
     align-content: center;
 }
 
-#turn-section{
+#turn-section {
+    height: 65%;
+    width: 80%;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+}
+
+#turn{
     display: flex;
+    align-items: start;
+    justify-content: center;
+    font-size: 500%;
+}
+
+#player1-score, #player2-score {
+    font-size: 500%;
+}
+
+#victory-message {
+    display: flex;
+    text-align: center;
+    font-size: 500%;
+    height: 25%;
+    width: 50%;
+    border: 5%;
+}
+
+#victory-section {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: url('../images/backgroundРесурс 5111.png') center/cover no-repeat;
+    height: 100%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    display: none;
     align-items: center;
     flex-direction: column;
 }
 
-#player1-score{
-    font-size: 500%;
+#winning-piece {
+    height: 50%;
+    width: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+
 }
 
-#player2-score{
-    font-size: 500%;
-}
 
-#victory-message{
-    display: flex;
-    font-size: 70%;
-    align-content: center;
-    justify-content: center;
-}
 
 
 .clicked {
@@ -182,61 +230,50 @@ button{
 }
 
 @media (max-width: 400px) {
-    body{
-        grid-template-rows: 1fr 1fr 1fr; /* Removed the third row */
-        grid-template-columns: 1fr; /* Only one column for full width */
+    body {
+        grid-template-rows: repeat(3, 1fr);
+        grid-template-columns: 1fr;
         grid-template-areas: 
-        "header"
-        "chess"
-        "r-space";
+            "header"
+            "chess"
+            "r-space";
         font-size: small;
         font-weight: 800;
     }
 
-    header{
+    header {
         font-size: 400%;
     }
 
-    button{
+    button {
         height: 20%;
-        aspect-ratio: 1/1;
-        border-radius: 50%;
         font-size: small;
         display: none;
     }
 
-    .score-board-square{
-        margin: 20px 0px;
-        width: 50%;
-        height: 10%;
-        font-size: 150%;
-        
+    .score-board-square {
+        margin: 20px 0;
+
     }
 
-    #chess-board {
-        width: 100%; /* Make the chess board take full width */
-        height: auto; /* Maintain aspect ratio */
+    #chess-board, #board {
+        width: 100%;
+        height: auto;
     }
 
     #board {
-
-        width: 90%; /* Full width */
-        height: auto; /* Keep the square aspect ratio */
+        width: 90%;
     }
 
-    #player1-score{
-        font-size: 300%;
-    }
-    
-    #player2-score{
+    #player1-score, #player2-score {
         font-size: 300%;
     }
 
-    #right-space{
+    #right-space {
         font-size: 400%;
     }
 
-    #left-space{
+    #left-space {
         display: none;
     }
 }

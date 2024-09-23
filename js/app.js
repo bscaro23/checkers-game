@@ -10,32 +10,35 @@ const player2ScoreElm = document.querySelector('#player2-score');
 const player1PieceElm = document.querySelector('#player1-piece');
 const player2PieceElm = document.querySelector('#player2-piece');
 const victoryMessageElm = document.querySelector('#victory-message');
+const victorySectionElm = document.querySelector('#victory-section');
 const resetButtonElm = document.querySelector('#reset');
 const replayButtonElm = document.querySelector('#replay');
 let sqrElms = [];
 
 /*---------------------------- Variables (state) ----------------------------*/
 
-let winner, tie, turn, pieceInHand, king, player1Piece,player2Piece, takeAgain;
+let winner, tie, turn, pieceInHand, king, takeAgain;
 let player1Score = 0, player2Score = 0; tieCounter = 0;
 let board = [], pieceToTake = [], spaceToLand = [];
+let player1Piece = 'white';
+let player2Piece = 'black';
 
 /*-------------------------------- Functions --------------------------------*/
 
 const addKing = (i, j) => {
-    if ((turn === '⚪️' && i === 7) || (turn === '⚫️' && i === 0)){
+    if ((turn === 'white' && i === 7) || (turn === 'black' && i === 0)){
         board[i][j].king = true;
     }
 }
 
 const changeTurn = () =>{
-    turn = (turn === '⚪️') ? '⚫️' : '⚪️';
+    turn = (turn === 'white') ? 'black' : 'white';
 }
 
 const checkForTake = ([i, j], [posI, posJ]) =>{
 
     if (!board[i][j].king){
-        if ((turn === '⚪️' && i > posI) || (turn === '⚫️' && i < posI)) return;
+        if ((turn === 'white' && i > posI) || (turn === 'black' && i < posI)) return;
     } 
 
     const newPosI = posI + (posI - i); // Checks the next row whether it is going down or up 
@@ -74,7 +77,9 @@ const checkForWinner = () => {
     });
 
     if (!whiteExists || !blackExists) {
+        victorySectionElm.style.display = 'flex';
         winner = (player1Piece === turn) ? 'Player 1 Wins Congratulations!' : 'Player 2 Wins Congratulations';
+        victorySectionElm.querySelector('#winning-piece').classList.add(`${turn}-king`);
         if (player1Piece === turn) player1Score++;
         else player2Score++;
     }
@@ -186,8 +191,8 @@ const init = () => {
         board[i] = [];
         for (let j = 0; j < 4; j++) {
             board[i][j] = { color: '', king: false };
-            if (i < 3) board[i][j].color = '⚪️';
-            if (i > 4) board[i][j].color = '⚫️';
+            if (i < 3) board[i][j].color = 'white';
+            if (i > 4) board[i][j].color = 'black';
         }
     }
     resetGameState();
@@ -196,27 +201,29 @@ const init = () => {
 }
 
 const reset = () =>{
-    init();
     player1Score = 0, player2Score = 0;
-    player1Piece = '⚪️', player2Piece = '⚫️';
+    player1Piece = 'white', player2Piece = 'black';
+    init();
 }
 
 const replay = () => {
     if (!winner && !tie) return;
+    [player1Piece, player2Piece] = player1Piece === 'white' ? ['black', 'white'] : ['white', 'black'];
     init();
-    [player1Piece, player2Piece] = player1Piece === '⚪️' ? ['⚫️', '⚪️'] : ['⚪️', '⚫️'];
 }
 
 const resetGameState = () => {
     winner = '';
     tie = false;
-    turn = '⚪️';
-    opposite = '⚫️';
+    turn = 'white';
+    opposite = 'black';
     pieceInHand = null;
     pieceToTake = [];
     spaceToLand = [];
     king = false;
     takeAgain = false;
+    victorySectionElm.querySelector('#winning-piece').classList.remove('white', 'black');
+    victorySectionElm.style.display = 'none';
 }
 
 const sqrsAvailable = (i, j) => {
@@ -242,7 +249,7 @@ const sqrsAvailable = (i, j) => {
     if (board[i][j].king) return possiblePositions;
 
     return possiblePositions.filter(pos => {
-        const isWhiteTurn = turn === '⚪️';
+        const isWhiteTurn = turn === 'white';
         const isValidMove = (sqrElms[originalPosition].querySelector('.piece').textContent !== '') || (isWhiteTurn ? pos >= originalPosition : pos <= originalPosition);
         return isValidMove;
     });
@@ -281,13 +288,13 @@ const updateBoard = () => {
             const piece = sqrElms[x].querySelector('.piece');
             if (piece) {
                 // Clear any previously applied classes ('white', 'black' etc.)
-                piece.classList.remove('white', 'black', 'king');
+                piece.classList.remove('white', 'black', 'white-king', 'black-king');
 
                 // Add the appropriate class based on the piece's color
-                if (square.color === '⚪️') {
-                    piece.classList.add('white');
-                } else if (square.color === '⚫️') {
-                    piece.classList.add('black');
+                if (square.king) {
+                    piece.classList.add(`${square.color}-king`);
+                } else if (square.color !== ''){
+                    piece.classList.add(square.color);
                 }
 
                 // Add the king class if applicable
@@ -299,15 +306,19 @@ const updateBoard = () => {
 }
 
 const updateMessage = () => {
-    whichTurnElm.textContent = turn;
-    victoryMessageElm.textContent = winner;
+    whichTurnElm.classList.remove('white', 'black');
+    whichTurnElm.classList.add(turn);
 }
 
 const updateScore = () => {
+    victoryMessageElm.textContent = winner;
     player1ScoreElm.textContent = player1Score;
     player2ScoreElm.textContent = player2Score;
-    player1PieceElm.textContent = player1Piece;
-    player2PieceElm.textContent = player2Piece;
+    player1PieceElm.classList.remove('white', 'black');
+    player2PieceElm.classList.remove('white', 'black');
+    player1PieceElm.classList.add(player1Piece);
+    player2PieceElm.classList.add(player2Piece);
+    console.log(player1Piece, player2Piece);
 }
 renderBoard();
 init();

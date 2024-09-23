@@ -6,24 +6,23 @@
     <title>CHECKERS</title>
     <link rel="stylesheet" href="./css/style.css">
     <script defer src="./js/app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     
 </head>
 <body>
     <header>
-        CHECKERS
+        <section id="buttons">
+            <button id="reset">RESET</button>
+        </section>
     </header>
     <div id="left-space">
         <section id="score-board">
             <div class="score-board-square" id="player1-piece"></div>
             <div class="score-board-square" id="player2-piece"></div>
-            <div class="score-board-square">PLAYER 1</div>
-            <div class="score-board-square">PLAYER 2</div>
             <div class="score-board-square" id="player1-score"></div>
             <div class="score-board-square" id="player2-score"></div>
-        </section>
-        <section id="buttons">
-            <button id="reset">RESET</button>
-            <button id="replay">REPLAY</button>
         </section>
     </div>
     <div id="chess-board">
@@ -31,12 +30,17 @@
         </section>
     </div>
     <div id="right-space">
-        <section id="victory-message">
-
-        </section>
         <section id="turn-section">
             <div id="which-turn"></div>
             <div id="turn">TURN</div>
+        </section>
+    </div>
+    <div id="victory-section">
+        <div id="winning-piece"></div>
+        <div id="victory-message"></div>
+        <section id="buttons">
+            <button id="replay">REPLAY</button>
+            <button id="reset">RESET</button>
         </section>
     </div>
 </body>
