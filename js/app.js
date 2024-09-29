@@ -77,9 +77,9 @@ const checkForWinner = () => {
 
     sqrElms.forEach((sqrElm) => {
         const piece = sqrElm.querySelector('.piece');
-        if (piece.classList.contains('white')) {
+        if (piece.classList.contains('white') || piece.classList.contains('white-king')) {
             whiteExists = true;
-        } else if (piece.classList.contains('black')) {
+        } else if (piece.classList.contains('black') || piece.classList.contains('black-king')) {
             blackExists = true;
         }
     });
@@ -132,6 +132,7 @@ const handleClick = (event, idx) =>{
         //Allows you to only click on the relevant squares
         sqrElms.forEach((sqrElm, idx) => sqrElm.style.pointerEvents = availableArr.includes(idx) ? 'auto' : 'none'); //There was a bug with .find() was returning false on 0 index so had to swap to include
         //highlight the clicked piece
+        sqrElms.forEach((sqrElm) => sqrElm.classList.remove('clickable'));
         sqrElms[idx].classList.add('clicked');
         // sets the piece in hand
         pieceInHand = newClick;
@@ -203,7 +204,14 @@ const handleClick = (event, idx) =>{
             checkForTakeTurkish();
             console.log(possiblePieces);
             if (possiblePieces.length > 0){
-                sqrElms.forEach((sqrElm, idx) => sqrElm.style.pointerEvents = possiblePieces    .includes(idx) ? 'auto' : 'none');
+                sqrElms.forEach((sqrElm, idx) => {
+                    if (possiblePieces.includes(idx)){
+                        sqrElm.style.pointerEvents = 'auto';
+                        sqrElm.classList.add('clickable');
+                    } else {
+                        sqrElm.style.pointerEvents = 'none';
+                    }
+                });
             }
         }
         render();
