@@ -375,7 +375,7 @@ button {
     }
 }
 
-@media (max-width: 375px) {
+@media (max-width: 400px) {
     body {
         grid-template-rows: repeat(4, 1fr); 
         grid-template-columns: 1fr 1fr; /* Use two columns */
