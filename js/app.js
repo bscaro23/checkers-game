@@ -5,6 +5,7 @@
 
 const boardElm = document.querySelector('#board');
 const whichTurnElm = document.querySelector('#which-turn');
+const modeButtonElm = document.querySelector('#mode')
 const player1ScoreElm = document.querySelector('#player1-score');
 const player2ScoreElm = document.querySelector('#player2-score');
 const player1PieceElm = document.querySelector('#player1-piece');
@@ -19,9 +20,10 @@ let sqrElms = [];
 
 let winner, tie, turn, pieceInHand, king, takeAgain;
 let player1Score = 0, player2Score = 0; tieCounter = 0;
-let board = [], pieceToTake = [], spaceToLand = [];
+let board = [], pieceToTake = [], spaceToLand = [], possiblePieces = [];
 let player1Piece = 'white';
 let player2Piece = 'black';
+let mode = 'ENGLISH';
 
 /*-------------------------------- Functions --------------------------------*/
 
@@ -31,8 +33,14 @@ const addKing = (i, j) => {
     }
 }
 
-const changeTurn = () =>{
-    turn = (turn === 'white') ? 'black' : 'white';
+const changeTurn = () => {
+    if (turn === 'white') {
+        turn = 'black';
+        opposite = 'white';
+    } else {
+        turn = 'white';
+        opposite = 'black';
+    }
 }
 
 const checkForTake = ([i, j], [posI, posJ]) =>{
@@ -98,7 +106,7 @@ const convertFrom2D = (x, y) => x * 4 + y;
 const handleClick = (event, idx) =>{
 
     if (winner || tie) return;
-
+    let availableArr;
 
     //change to the 2d array
     const i = Math.floor(idx / 4), j = idx % 4;
@@ -113,13 +121,21 @@ const handleClick = (event, idx) =>{
         // wont allow you to click on other pieces
         if (board[i][j].color !== turn) return;
 
-        const availableArr = sqrsAvailable(i, j);
+
+        if (mode === 'ENGLISH'){
+            availableArr = sqrsAvailableEnglish(i, j);
+        } else {
+            availableArr = sqrsAvailableTurkish(i, j);
+        }
+
+        
         //Allows you to only click on the relevant squares
         sqrElms.forEach((sqrElm, idx) => sqrElm.style.pointerEvents = availableArr.includes(idx) ? 'auto' : 'none'); //There was a bug with .find() was returning false on 0 index so had to swap to include
         //highlight the clicked piece
         sqrElms[idx].classList.add('clicked');
         // sets the piece in hand
         pieceInHand = newClick;
+        possiblePieces = [];
         return;
     }
 
@@ -161,7 +177,12 @@ const handleClick = (event, idx) =>{
             render();
             pieceToTake = [];
             spaceToLand = [];
-            const availableArr = sqrsAvailable(i, j);
+            if (mode === 'ENGLISH'){
+                availableArr = sqrsAvailableEnglish(i, j);
+            } else {
+                availableArr = sqrsAvailableTurkish(i, j);
+            }
+            console.log(`pieceToTake = ${pieceToTake}, spaceToLand = ${spaceToLand}`);
             if (pieceToTake.length > 0){
                 sqrElms.forEach((sqrElm, idx) => sqrElm.style.pointerEvents = availableArr.includes(idx) ? 'auto' : 'none');
                 sqrElms[convertFrom2D(pieceInHand[0], pieceInHand[1])].classList.remove('clicked');
@@ -178,6 +199,13 @@ const handleClick = (event, idx) =>{
         pieceInHand = null;
         takeAgain = false;
         clickableAgain();
+        if (mode === 'TURKISH'){
+            checkForTakeTurkish();
+            console.log(possiblePieces);
+            if (possiblePieces.length > 0){
+                sqrElms.forEach((sqrElm, idx) => sqrElm.style.pointerEvents = possiblePieces    .includes(idx) ? 'auto' : 'none');
+            }
+        }
         render();
         tieCounter += 1;
         pieceToTake = [];
@@ -212,6 +240,10 @@ const replay = () => {
     [player1Piece, player2Piece] = player1Piece === 'white' ? ['black', 'white'] : ['white', 'black'];
     init();
 }
+const modeClick = () =>{
+    mode = mode === 'ENGLISH' ? 'TURKISH' : 'ENGLISH';
+    reset();
+}
 
 const resetGameState = () => {
     winner = '';
@@ -229,7 +261,7 @@ const resetGameState = () => {
     victorySectionElm.style.display = 'none';
 }
 
-const sqrsAvailable = (i, j) => {
+const sqrsAvailableEnglish = (i, j) => {
     const originalPosition = convertFrom2D(i, j);
     let possiblePositions = [originalPosition];
 
@@ -257,6 +289,86 @@ const sqrsAvailable = (i, j) => {
         return isValidMove;
     });
 }
+
+const checkForTakeTurkish = () => {
+    for (let x = 0; x < 8; x++){
+        for (let y = 0; y < 4; y++){
+            spaceToLand = [], pieceToTake = [];
+            if (board[x][y].color === turn){
+                console.log(x, y);
+                sqrsAvailableTurkish(x, y);
+                if (spaceToLand.length > 0){
+                    possiblePieces.push(convertFrom2D(x, y));
+                }
+            }
+        }
+    }
+    spaceToLand = [], pieceToTake = [];
+} 
+
+
+const sqrsAvailableTurkish = (i, j) =>{
+    const originalPosition = convertFrom2D(i, j);
+    let possiblePositions = [originalPosition];
+    const direction = [[0, -1], [1, 0], [1, 0], [0, -1]] //Cached diections from tl clockwise [even, odd] row
+    for (let x = 0; x < 4; x++){
+        let pieceToTakeTemp;
+        let y;
+        let posI = i;
+        let posJ = j;
+        if (x < 2){
+            y = -1
+        } else{
+            y= 1;
+        }
+        do{
+            posI += y;
+            if (posI % 2 !== 0){
+                posJ += direction[x][0];
+            } else{
+                posJ += direction[x][1];
+            }
+
+            if(posI < 0 || posI > 7 || posJ < 0 || posJ > 3){
+                break;
+            }
+
+            if (board[posI][posJ].color === turn){
+                break;
+            } else if(pieceToTakeTemp && board[posI][posJ].color === opposite){
+                break;
+            } else if (pieceToTakeTemp){
+                possiblePositions.push(convertFrom2D(posI, posJ));
+                spaceToLand.push(convertFrom2D(posI, posJ));
+                pieceToTake.push(pieceToTakeTemp);
+            }else if (board[posI][posJ].color === opposite){
+                pieceToTakeTemp = [posI, posJ];
+            }else if (board[posI][posJ].color === ''){
+                possiblePositions.push(convertFrom2D(posI, posJ));
+            }
+        } while (posI >= 0 && posJ >= 0 && posI < 8 && posJ < 4);
+    } 
+
+    //If there is a take available it must be done
+    if (board[i][j].king) {
+        if (spaceToLand.length > 0) return spaceToLand;
+        return possiblePositions;
+    }
+
+    spaceToLand = spaceToLand.filter((pos)=>{ 
+        return (pos > originalPosition - 10 && pos < originalPosition + 10);
+    })
+    
+    if (spaceToLand.length > 0) return spaceToLand;
+    
+    return possiblePositions = possiblePositions.filter((pos) =>{
+        if (turn === 'white'){
+            return (pos > originalPosition && pos < originalPosition + 6);
+        } else {
+            return (pos < originalPosition && pos > originalPosition - 6);
+        }
+    })
+} 
 
 const render = () => {
     updateBoard();
@@ -311,6 +423,7 @@ const updateBoard = () => {
 const updateMessage = () => {
     whichTurnElm.classList.remove('white', 'black');
     whichTurnElm.classList.add(turn);
+    modeButtonElm.textContent = mode;
 }
 
 const updateScore = () => {
@@ -321,7 +434,7 @@ const updateScore = () => {
     player2PieceElm.classList.remove('white', 'black');
     player1PieceElm.classList.add(player1Piece);
     player2PieceElm.classList.add(player2Piece);
-    console.log(player1Piece, player2Piece);
+    
 }
 renderBoard();
 init();
@@ -334,6 +447,7 @@ sqrElms.forEach((square, idx) => {
 
 replayButtonElm.addEventListener('click', replay);
 resetButtonElm.addEventListener('click', reset);
+modeButtonElm.addEventListener('click', modeClick);
 /*------------------------ Cached Element References ------------------------*/
 
 

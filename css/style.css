@@ -30,13 +30,12 @@ header {
 }
 
 button {
-    min-height: 60%;
-    min-width: 60%;
+    height: 100%;
     aspect-ratio: 1/1;
     border-radius: 50%;
     background-color: #062555;
     color: #d4c54a;
-    font-size: 15%;
+    font-size: 10%;
     border: solid antiquewhite;
 }
 
