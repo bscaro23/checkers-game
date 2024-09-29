@@ -375,108 +375,205 @@ button {
     }
 }
 
+/* Styles for screens with max-width of 400px */
 @media (max-width: 400px) {
-    body {
-        grid-template-rows: repeat(4, 1fr); 
-        grid-template-columns: 1fr 1fr; /* Use two columns */
-        grid-template-areas: 
-            "header header"
-            "chess chess"
-            "l-space r-space"
-            "buttons buttons"; /* Left and right spaces next to each other */
+    
+    /* Portrait mode */
+    @media screen and (orientation: portrait) {
+        body {
+            grid-template-rows: repeat(4, 1fr); 
+            grid-template-columns: 1fr 1fr; /* Use two columns */
+            grid-template-areas: 
+                "header header"
+                "chess chess"
+                "l-space r-space"
+                "buttons buttons"; /* Left and right spaces next to each other */
+        }
+
+        #right-space, #left-space {
+            background: linear-gradient(to top, black 40%, transparent 100%); 
+        }
+
+        #left-space {
+            margin: 0%;
+            display: flex;
+            justify-content: start;
+            height: 100%; 
+        }
+
+        #which-turn {
+            width: 50%;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        #buttons {
+            margin: 0%;
+            height: 100%;
+            width: 100%;
+            position: static;
+            grid-area: buttons;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #turn {
+            width: 50%;
+            justify-content: start;
+            align-items: center;
+            font-size: 1.5rem; 
+        }
+
+        #turn-section {
+            display: flex;
+            flex-direction: row;
+        }
+
+        button {
+            height: 3.5rem; 
+            width: 3.5rem; 
+            font-size: 0.6rem; 
+        }
+
+        #score-board {
+            height: 100%;
+            width: 80%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+
+        .score-board-square {
+            font-size: 1.2rem; 
+            width: 100%;
+            height: 100%;
+        }
+
+        #board {
+            width: 95%;
+            height: auto; 
+            border: 0.2rem solid #d4c54a; 
+        }
+
+        #player1-score, #player2-score {
+            font-size: 2.5rem; 
+        }
+
+        #victory-message {
+            font-size: 2rem; 
+            width: 90%; 
+            border: 0.2rem solid; 
+        }
+
+        #winning-piece {
+            height: 20%;
+            width: 20%;
+        }
+
+        #player1-piece, #player2-piece {
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-position: center;
+        }
     }
 
-    #right-space {
-        background: linear-gradient(to top, black 40%, transparent 100%); 
-    }
+    /* Landscape mode */
+    @media screen and (orientation: landscape) {
+        body {
+            grid-template-rows: repeat(3, 1fr); /* Use fewer rows in landscape */
+            grid-template-columns: 1fr 1fr 1fr; /* More columns for landscape */
+            grid-template-areas: 
+                "header header header"
+                "chess chess chess"
+                "l-space buttons r-space"; /* Different arrangement */
+        }
 
-    #left-space {
-        background: linear-gradient(to top, black 40%, transparent 100%); 
-        margin: 0%;
-        display: flex;
-        justify-content: start;
-        height: 100%; 
-    }
+        #right-space, #left-space {
+            background: linear-gradient(to top, black 40%, transparent 100%);
+        }
 
-    #which-turn {
-        width: 50%;
-        background-size: contain;
-        background-repeat: no-repeat;
-    }
+        #left-space {
+            margin: 0%;
+            display: flex;
+            justify-content: start;
+            height: 100%;
+        }
 
-    #buttons {
-        margin: 0%;
-        height: 100%;
-        width: 100%;
-        position: static;
-        grid-area: buttons;
-        justify-content: center;
-        align-items: center;
-    }
+        #which-turn {
+            width: 40%; /* Adjust width for landscape */
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
 
-    #turn {
-        width: 50%;
-        justify-content: start;
-        align-items: center;
-    }
+        #buttons {
+            margin: 0%;
+            height: 100%;
+            width: 100%;
+            position: static;
+            grid-area: buttons;
+            justify-content: center;
+            align-items: center;
+        }
 
-    #turn-section {
-        display: flex;
-        flex-direction: row;
-    }
+        #turn {
+            width: 40%; /* Adjust width for landscape */
+            justify-content: start;
+            align-items: center;
+            font-size: 1.5rem; 
+        }
 
-    button {
-        height: 3.5rem; 
-        width: 3.5rem; 
-        font-size: 0.6rem; 
-    }
+        #turn-section {
+            display: flex;
+            flex-direction: row;
+        }
 
-    #score-board {
-        height: 100%;
-        width: 80%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr;
-    }
+        button {
+            height: 4rem; /* Slightly larger buttons in landscape */
+            width: 4rem;
+            font-size: 0.7rem; 
+        }
 
-    .score-board-square {
-        font-size: 1.2rem; 
-        width:100%;
-        height: 1000%;
-    }
+        #score-board {
+            height: 100%;
+            width: 90%; /* More width for landscape */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
 
-    #board {
-        width: 95%;
-        height: auto; 
-        border: 0.2rem solid #d4c54a; 
-    }
+        .score-board-square {
+            font-size: 1.2rem; 
+            width: 100%;
+            height: 100%;
+        }
 
-    #turn {
-        font-size: 1.5rem; 
-    }
+        #board {
+            width: 90%;
+            height: auto;
+            border: 0.2rem solid #d4c54a; 
+        }
 
-    #player1-score, #player2-score {
-        font-size: 2.5rem; 
-    }
+        #player1-score, #player2-score {
+            font-size: 2.5rem; 
+        }
 
-    #victory-message {
-        font-size: 2rem; 
-        width: 90%; 
-        border: 0.2rem solid; 
-    }
+        #victory-message {
+            font-size: 2rem; 
+            width: 90%;
+            border: 0.2rem solid; 
+        }
 
-    #winning-piece {
-        height: 20%;
-        width: 20%;
-    }
+        #winning-piece {
+            height: 20%;
+            width: 20%;
+        }
 
-
-
-    #player1-piece, #player2-piece{
-        width: 100%;
-        height: 100%;
-        background-size: contain;
-        background-position: center;
+        #player1-piece, #player2-piece {
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-position: center;
+        }
     }
 }
-
